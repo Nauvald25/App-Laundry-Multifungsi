@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#102e49" />
+    <title>LaundryPro — Manajemen Laundry</title>
+    <script
+      src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"
+      defer
+    ></script>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --paper: #fff;
+        --ink: #153047;
+        --muted: #64748b;
+        --line: #dee6ed;
+        --accent: #077db3;
+        --accent2: #075980;
+        --soft: #e9f6fc;
+        --danger: #b42318;
+        --good: #168455;
+        --shadow: 0 12px 32px #12344b0d;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font: 15px/1.5 system-ui, -apple-system, Segoe UI, sans-serif;
+      }
+      body.dark {
+        --bg: #0d1928;
+        --paper: #16283b;
+        --ink: #e8f1fa;
+        --muted: #a5b8cc;
+        --line: #30445b;
+        --accent: #47b9ed;
+        --accent2: #70cafa;
+        --soft: #183a50;
+        --danger: #ff8c80;
+        --good: #6de4a5;
+        --shadow: 0 12px 32px #03091470;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      input,
+      select,
+      textarea {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        background: var(--paper);
+        color: var(--ink);
+        width: 100%;
+        outline: none;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px #0ca9eb29;
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        font-weight: 650;
+        margin-bottom: 5px;
+      }
+      .field {
+        margin-bottom: 14px;
+      }
+      .btn {
+        border: 0;
+        border-radius: 10px;
+        background: var(--accent);
+        color: white;
+        padding: 10px 15px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .btn:hover {
+        filter: brightness(0.94);
+      }
+      .btn.secondary {
+        background: var(--soft);
+        color: var(--accent2);
+      }
+      .btn.danger {
+        background: #ffebeb;
+        color: var(--danger);
+      }
+      .btn.small {
+        font-size: 12px;
+        padding: 7px 10px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .four {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .panel {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      h2 {
+        font-size: 22px;
+      }
+      h3 {
+        font-size: 16px;
+      }
+      p {
+        margin-bottom: 10px;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .small {
+        font-size: 12px;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .between {
+        justify-content: space-between;
+      }
+      .right {
+        text-align: right;
+      }
+      .money {
+        font-weight: 800;
+      }
+      .metric {
+        font-size: 25px;
+        font-weight: 850;
+        letter-spacing: -1px;
+      }
+      .brand {
+        font-weight: 850;
+        font-size: 19px;
+        letter-spacing: -0.5px;
+      }
+      .brand span {
+        color: var(--accent);
+      }
+      .shell {
+        display: grid;
+        grid-template-columns: 238px 1fr;
+        min-height: 100vh;
+      }
+      .side {
+        background: var(--paper);
+        border-right: 1px solid var(--line);
+        padding: 22px 14px;
+      }
+      .side .brand {
+        padding: 3px 12px 23px;
+      }
+      .nav {
+        display: block;
+        border: 0;
+        background: transparent;
+        width: 100%;
+        padding: 11px 13px;
+        text-align: left;
+        color: var(--muted);
+        border-radius: 11px;
+        margin-bottom: 4px;
+      }
+      .nav:hover,
+      .nav.active {
+        background: var(--soft);
+        color: var(--accent2);
+        font-weight: 750;
+      }
+      .main {
+        min-width: 0;
+      }
+      .top {
+        height: 70px;
+        background: var(--paper);
+        border-bottom: 1px solid var(--line);
+        padding: 0 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .content {
+        max-width: 1360px;
+        margin: auto;
+        padding: 25px;
+      }
+      .auth {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 20% 10%, #137d9a, #0b2c4a 65%);
+        padding: 20px;
+      }
+      .auth .panel {
+        width: min(450px, 100%);
+        padding: 30px;
+      }
+      .auth h1 {
+        font-size: 26px;
+      }
+      .auth .brand {
+        margin-bottom: 20px;
+      }
+      .auth button {
+        width: 100%;
+      }
+      .auth .link {
+        margin-top: 15px;
+        text-align: center;
+        color: var(--accent2);
+        cursor: pointer;
+      }
+      .badge {
+        display: inline-block;
+        border-radius: 30px;
+        padding: 4px 10px;
+        background: var(--soft);
+        color: var(--accent2);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .badge.siap,
+      .badge.selesai {
+        background: #daf7e7;
+        color: #146b41;
+      }
+      .badge.menunggu {
+        background: #fff2d9;
+        color: #8b5710;
+      }
+      .badge.cuci,
+      .badge.kering,
+      .badge.setrika {
+        background: #e8efff;
+        color: #304fa4;
+      }
+      .tablewrap {
+        overflow: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 600px;
+      }
+      th {
+        text-align: left;
+        font-size: 12px;
+        color: var(--muted);
+        background: var(--soft);
+      }
+      th,
+      td {
+        padding: 11px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: middle;
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      .empty {
+        text-align: center;
+        color: var(--muted);
+        padding: 34px;
+      }
+      .actions {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+      }
+      .sep {
+        height: 1px;
+        background: var(--line);
+        margin: 18px 0;
+      }
+      .toast {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        background: var(--ink);
+        color: var(--bg);
+        padding: 12px 17px;
+        border-radius: 12px;
+        z-index: 20;
+        box-shadow: var(--shadow);
+        max-width: 400px;
+      }
+      .toast.bad {
+        background: #a52222;
+        color: white;
+      }
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: #041322aa;
+        z-index: 15;
+        display: grid;
+        place-items: center;
+        padding: 14px;
+      }
+      .modalbox {
+        background: var(--paper);
+        width: min(570px, 100%);
+        max-height: 92vh;
+        overflow: auto;
+        border-radius: 18px;
+        padding: 24px;
+      }
+      .chartbox {
+        height: 265px;
+      }
+      .warn {
+        border-left: 4px solid #eeac35;
+        padding: 12px 16px;
+        background: var(--soft);
+        border-radius: 8px;
+      }
+      .printhead {
+        display: none;
+      }
+      @media (max-width: 1000px) {
+        .four {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .three {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 760px) {
+        .shell {
+          display: block;
+        }
+        .side {
+          padding: 10px;
+          display: flex;
+          gap: 5px;
+          overflow: auto;
+          position: sticky;
+          top: 0;
+          z-index: 3;
+          align-items: center;
+        }
+        .side .brand {
+          padding: 5px 8px;
+          white-space: nowrap;
+          font-size: 15px;
+        }
+        .nav {
+          width: auto;
+          white-space: nowrap;
+          padding: 8px;
+          margin: 0;
+          font-size: 12px;
+        }
+        .top {
+          height: auto;
+          padding: 13px 16px;
+        }
+        .content {
+          padding: 16px;
+        }
+        .two,
+        .three {
+          grid-template-columns: 1fr;
+        }
+        .metric {
+          font-size: 21px;
+        }
+      }
+      @media (max-width: 420px) {
+        .four {
+          grid-template-columns: 1fr 1fr;
+        }
+        .panel {
+          padding: 15px;
+        }
+      }
+      @media print {
+        body {
+          background: white !important;
+          color: #000 !important;
+        }
+        .shell,
+        .auth,
+        .modal .btn,
+        .modal .no-print,
+        .toast {
+          display: none !important;
+        }
+        .modal {
+          position: static;
+          background: none;
+          padding: 0;
+          display: block;
+        }
+        .modalbox {
+          box-shadow: none;
+          border: 0;
+          max-height: none;
+          width: 80mm;
+          padding: 3mm;
+          color: #000;
+          background: white;
+        }
+        .modalbox * {
+          color: #000 !important;
+        }
+        .printhead {
+          display: block;
+        }
+        #receipt {
+          font: 12px/1.5 monospace;
+        }
+        .sep {
+          border-top: 1px dashed #000;
+          background: none;
+        }
+        button {
+          display: none !important;
+        }
+        @page {
+          size: 80mm auto;
+          margin: 4mm;
+        }
+      }
+    /* Badge Warna-warni Aktivitas */
+.badge-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.act-pesanan { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+.act-status { background: rgba(251, 146, 60, 0.15); color: #fb923c; border: 1px solid rgba(251, 146, 60, 0.3); }
+.act-bayar { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.3); }
+.act-pelanggan { background: rgba(167, 139, 250, 0.15); color: #a78bfa; border: 1px solid rgba(167, 139, 250, 0.3); }
+.act-user { background: rgba(244, 114, 182, 0.15); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.3); }
+.act-default { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); }
+
+/* Avatar Pengguna */
+.user-avatar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Format Visual Kode & Transisi Status */
+.code-tag {
+  background: rgba(255,255,255,0.06);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+.arrow-step {
+  color: #94a3b8;
+  margin: 0 4px;
+}
+.status-target {
+  background: rgba(255,255,255,0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #38bdf8;
+  font-weight: 500;
+}
+      .side{background:linear-gradient(170deg,#103d58,#082a43 65%,#051e32)}
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="overlay"></div>
+    <div id="toast"></div>
+    <script>
+      const $ = (s) => document.querySelector(s),
+        esc = (s) =>
+          String(s ?? "").replace(
+            /[&<>"']/g,
+            (x) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;",
+              }[x])
+          ),
+        rp = (n) =>
+          new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            maximumFractionDigits: 0,
+          }).format(n || 0),
+        dt = (s) => new Date(s).toLocaleString("id-ID"),
+        today = () => new Date().toLocaleDateString("en-CA"),
+        input = (label, id, type = "text", value = "", extra = "") =>
+          `<div class="field"><label for="${id}">${label}</label><input id="${id}" type="${type}" value="${esc(
+            value
+          )}" ${extra}></div>`;
+      let me = null,
+        page = "dashboard",
+        chart = null,
+        items = [],
+        services = [],
+        customers = [],
+        vouchers = [],
+        orders = [],
+        stock = [],
+        reportData = null;
+      const val = (id) => $("#" + id)?.value?.trim() || "",
+        toast = (s, bad = false) => {
+          $("#toast").innerHTML = `<div class="toast ${
+            bad ? "bad" : ""
+          }" role="alert">${esc(s)}</div>`;
+          setTimeout(() => ($("#toast").innerHTML = ""), 4200);
+        };
+      async function api(url, opt = {}) {
+        let r = await fetch("/api" + url, {
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          ...opt,
+        });
+        let data = await r.json().catch(() => ({}));
+        if (!r.ok) throw Error(data.error || "Terjadi kesalahan");
+        return data;
+      }
+      async function run(fn) {
+        try {
+          await fn();
+        } catch (e) {
+          toast(e.message, true);
+        }
+      }
+      function loginScreen(register = false) {
+        me = null;
+        $(
+          "#app"
+        ).innerHTML = `<div class="auth"><div class="panel"><div class="brand">◈ Laundry<span>Pro</span></div><h1>${
+          register ? "Daftarkan usaha" : "Selamat datang kembali"
+        }</h1><p class="muted">${
+          register
+            ? "Setiap usaha punya data dan akun sendiri."
+            : "Masuk ke ruang kerja laundry Anda."
+        }</p><form id="authForm">${
+          register
+            ? input(
+                "Nama usaha",
+                "business",
+                "text",
+                "",
+                'required maxlength="120"'
+              ) +
+              input("Nama Anda", "name", "text", "", 'required maxlength="120"')
+            : ""
+        }${input("Email", "email", "email", "", "required")}${input(
+          "Kata sandi (min. 10 karakter)",
+          "password",
+          "password",
+          "",
+          'required minlength="10"'
+        )}<button class="btn">${
+          register ? "Buat akun" : "Masuk"
+        }</button></form><div class="link" id="switchAuth">${
+          register
+            ? "Sudah punya akun? Masuk"
+            : "Belum punya akun? Daftar gratis"
+        }</div></div></div>`;
+        $("#switchAuth").onclick = () => loginScreen(!register);
+        $("#authForm").onsubmit = (e) => {
+          e.preventDefault();
+          run(async () => {
+            await api("/auth/" + (register ? "register" : "login"), {
+              method: "POST",
+              body: JSON.stringify({
+                business: val("business"),
+                name: val("name"),
+                email: val("email"),
+                password: val("password"),
+              }),
+            });
+            await boot();
+          });
+        };
+      }
+      const nav = [
+        ["dashboard", "◫ Dashboard"],
+        ["kasir", "◉ Kasir"],
+        ["pesanan", "▤ Pesanan"],
+        ["pelanggan", "♧ Pelanggan"],
+        ["piutang", "◷ Piutang"],
+        ["stok", "▦ Stok"],
+        ["voucher", "◇ Voucher"],
+        ["laporan", "▥ Laporan"],
+        ["aktivitas", "◴ Aktivitas"],
+        ["pengaturan", "⚙ Pengaturan"],
+      ];
+      function shell() {
+        $(
+          "#app"
+        ).innerHTML = `<div class="shell"><aside class="side"><div class="brand">◈ Laundry<span>Pro</span></div>${nav
+          .filter(
+            (x) =>
+              me.user.role === "owner" ||
+              !["voucher", "laporan", "aktivitas", "pengaturan"].includes(x[0])
+          )
+          .map(
+            (x) => `<button class="nav" data-page="${x[0]}">${x[1]}</button>`
+          )
+          .join(
+            ""
+          )}</aside><div class="main"><header class="top"><div><strong>${esc(
+          me.business.name
+        )}</strong> <span class="muted small">/ ${esc(
+          me.user.role === "owner" ? "Pemilik" : "Kasir"
+        )}</span></div><div class="row"><button class="btn secondary small" id="theme" title="Ganti tema">◐ Tema</button><span class="small muted">${esc(
+          me.user.name
+        )}</span><button class="btn secondary small" id="logout">Keluar</button></div></header><main id="content" class="content"></main></div></div>`;
+        document
+          .querySelectorAll("[data-page]")
+          .forEach((b) => (b.onclick = () => go(b.dataset.page)));
+        $("#theme").onclick = () => {
+          document.body.classList.toggle("dark");
+          localStorage.setItem(
+            "lp_theme",
+            document.body.classList.contains("dark") ? "dark" : "light"
+          );
+        };
+        $("#logout").onclick = () =>
+          run(async () => {
+            await api("/auth/logout", { method: "POST" });
+            loginScreen();
+          });
+      }
+      async function boot() {
+        try {
+          me = await api("/me");
+          shell();
+          await go(page);
+        } catch {
+          loginScreen();
+        }
+      }
+      async function go(p) {
+        page = p;
+        document
+          .querySelectorAll(".nav")
+          .forEach((n) => n.classList.toggle("active", n.dataset.page === p));
+        if (chart) {
+          chart.destroy();
+          chart = null;
+        }
+        $("#content").innerHTML = '<p class="muted">Memuat...</p>';
+        await run(async () => {
+          await {
+            dashboard,
+            kasir,
+            pesanan,
+            pelanggan,
+            piutang,
+            stok,
+            voucher,
+            laporan,
+            aktivitas,
+            pengaturan,
+          }[p]();
+        });
+      }
+      function title(t, sub = "") {
+        return `<div class="row between" style="margin-bottom:20px"><div><h2 style="margin-bottom:2px">${t}</h2><span class="muted small">${sub}</span></div></div>`;
+      }
+      function table(head, rows) {
+        return `<div class="tablewrap"><table><thead><tr>${head
+          .map((h) => `<th>${h}</th>`)
+          .join("")}</tr></thead><tbody>${
+          rows ||
+          `<tr><td class="empty" colspan="${head.length}">Belum ada data.</td></tr>`
+        }</tbody></table></div>`;
+      }
+      function badge(s) {
+        return `<span class="badge ${esc(s)}">${esc(s)}</span>`;
+      }
+      function modal(html) {
+        $(
+          "#overlay"
+        ).innerHTML = `<div class="modal" id="modal"><div class="modalbox"><div class="row between no-print" style="margin-bottom:15px"><strong>LaundryPro</strong><button class="btn secondary small" id="closeModal">Tutup ✕</button></div>${html}</div></div>`;
+        $("#closeModal").onclick = closeModal;
+      }
+      function closeModal() {
+        $("#overlay").innerHTML = "";
+      }
+      async function dashboard() {
+        const d = await api("/dashboard");
+        $("#content").innerHTML =
+          title("Dashboard", "Ringkasan kondisi usaha saat ini") +
+          `<div class="grid four"><div class="panel"><div class="muted">Pembayaran tercatat</div><div class="metric">${rp(
+            d.stats.received
+          )}</div></div><div class="panel"><div class="muted">Sedang diproses</div><div class="metric">${
+            d.stats.processing
+          }</div></div><div class="panel"><div class="muted">Siap diambil</div><div class="metric">${
+            d.stats.ready
+          }</div></div><div class="panel"><div class="muted">Belum dibayar</div><div class="metric">${rp(
+            d.stats.outstanding
+          )}</div></div></div><div class="grid two" style="margin-top:16px"><div class="panel"><h3>Pembayaran berdasarkan tanggal pesanan · 7 hari</h3><div class="chartbox"><canvas id="revenueChart"></canvas></div></div><div class="panel"><h3>Perlu perhatian</h3>${
+            d.low.length
+              ? d.low
+                  .map(
+                    (s) =>
+                      `<p class="warn">${esc(s.name)}: ${s.quantity} ${esc(
+                        s.unit
+                      )} (batas ${s.minimum})</p>`
+                  )
+                  .join("")
+              : '<p class="muted">Tidak ada stok di bawah batas minimum.</p>'
+          }<div class="sep"></div><h3>Pesanan terbaru</h3>${
+            d.recent.length
+              ? d.recent
+                  .map(
+                    (o) =>
+                      `<div class="row between" style="padding:8px 0;border-bottom:1px solid var(--line)"><span>${esc(
+                        o.code
+                      )}<br><small class="muted">${esc(
+                        o.customer_name
+                      )}</small></span>${badge(o.status)}</div>`
+                  )
+                  .join("")
+              : '<p class="muted">Belum ada pesanan.</p>'
+          }</div></div>`;
+        if (window.Chart) {
+          const dates = Array.from({ length: 7 }, (_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() - 6 + i);
+            return d.toLocaleDateString("en-CA");
+          });
+          chart = new Chart($("#revenueChart"), {
+            type: "bar",
+            data: {
+              labels: dates.map((x) => x.slice(5)),
+              datasets: [
+                {
+                  label: "Pembayaran (Rp)",
+                  data: dates.map(
+                    (x) => d.revenue.find((r) => r.date === x)?.amount || 0
+                  ),
+                  backgroundColor: "#077db3",
+                  borderRadius: 7,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+            },
+          });
+        } else
+          $(".chartbox").innerHTML =
+            '<p class="muted">Grafik tidak tersedia tanpa koneksi CDN.</p>';
+      }
+      async function loadKasir() {
+        [customers, services, vouchers] = await Promise.all([
+          api("/customers"),
+          api("/services"),
+          api("/vouchers"),
+        ]);
+        services = services.filter((s) => s.active);
+      }
+      function customerOptions() {
+        return customers
+          .map(
+            (c) =>
+              `<option value="${c.id}">${esc(c.name)} ${
+                c.phone ? "— " + esc(c.phone) : ""
+              } (poin: ${c.points})</option>`
+          )
+          .join("");
+      }
+      function serviceOptions() {
+        return services
+          .map(
+            (s) =>
+              `<option value="${s.id}">${esc(s.name)} — ${rp(s.price)}/${esc(
+                s.unit
+              )}</option>`
+          )
+          .join("");
+      }
+      async function kasir() {
+        await loadKasir();
+        items = [];
+        renderKasir();
+      }
+      function renderKasir() {
+        const subtotal = items.reduce((a, i) => a + i.price * i.quantity, 0);
+        $("#content").innerHTML =
+          title("Kasir", "Harga dihitung server saat pesanan disimpan") +
+          `<div class="grid two"><div class="panel"><h3>Data transaksi</h3><div class="field"><label>Pelanggan</label><select id="customer">${customerOptions()}</select></div><button class="btn secondary small" id="newCustomer">+ Pelanggan baru</button><div class="sep"></div><div class="row" style="align-items:end"><div style="flex:3;min-width:140px"><label>Layanan</label><select id="service">${serviceOptions()}</select></div><div style="flex:1;min-width:90px">${input(
+            "Jumlah",
+            "quantity",
+            "number",
+            "1",
+            'min="0.001" max="10000" step="0.001"'
+          )}</div><button class="btn" id="addItem" ${
+            !services.length ? "disabled" : ""
+          }>+ Tambah</button></div><div class="sep"></div>${table(
+            ["Layanan", "Jumlah", "Harga", "Subtotal", ""],
+            items
+              .map(
+                (i, k) =>
+                  `<tr><td>${esc(i.name)}</td><td>${i.quantity} ${esc(
+                    i.unit
+                  )}</td><td>${rp(i.price)}</td><td>${rp(
+                    Math.round(i.price * i.quantity)
+                  )}</td><td><button class="btn danger small remove" data-i="${k}">Hapus</button></td></tr>`
+              )
+              .join("")
+          )}</div><div class="panel"><h3>Ringkasan & pembayaran</h3><div class="row between"><span>Subtotal awal</span><strong>${rp(
+            Math.round(subtotal)
+          )}</strong></div><p class="muted small">Diskon member, voucher, dan poin diverifikasi server sebelum disimpan.</p><div class="sep"></div>${input(
+            "Kode voucher (opsional)",
+            "voucher",
+            "text",
+            "",
+            'maxlength="32"'
+          )}<div class="field"><label class="row" style="font-weight:normal"><input type="checkbox" id="redeem" style="width:auto"> Tukar 100 poin untuk diskon hingga Rp5.000</label></div>${input(
+            "Dibayar sekarang (Rp)",
+            "paid",
+            "number",
+            "0",
+            'min="0" step="1"'
+          )}<div class="field"><label>Metode pembayaran</label><select id="method"><option value="tunai">Tunai</option><option value="transfer">Transfer</option><option value="qris">QRIS</option><option value="lainnya">Lainnya</option></select></div><p class="warn small">Isi 0 untuk piutang. Bayar sebagian diperbolehkan.</p><button class="btn" style="width:100%" id="submitOrder" ${
+            !items.length || !customers.length ? "disabled" : ""
+          }>Simpan pesanan & buka struk</button></div></div>`;
+        $("#addItem").onclick = () => {
+          const s = services.find((x) => x.id === Number(val("service"))),
+            q = Number(val("quantity"));
+          if (
+            !s ||
+            !Number.isFinite(q) ||
+            q <= 0 ||
+            q > 10000 ||
+            Math.round(q * 1000) !== q * 1000
+          ) {
+            toast("Jumlah harus positif, maksimal 3 desimal", true);
+            return;
+          }
+          items.push({ ...s, service_id: s.id, quantity: q });
+          renderKasir();
+        };
+        document.querySelectorAll(".remove").forEach(
+          (x) =>
+            (x.onclick = () => {
+              items.splice(Number(x.dataset.i), 1);
+              renderKasir();
+            })
+        );
+        $("#newCustomer").onclick = () => {
+          modal(
+            `<h3>Tambah pelanggan</h3><form id="newCustomerForm">${input(
+              "Nama",
+              "newName",
+              "text",
+              "",
+              'required maxlength="120"'
+            )}${input(
+              "WhatsApp (opsional)",
+              "newPhone",
+              "tel",
+              "",
+              'pattern="\\+?[0-9]{9,15}"'
+            )}<button class="btn">Simpan</button></form>`
+          );
+          $("#newCustomerForm").onsubmit = (e) => {
+            e.preventDefault();
+            run(async () => {
+              await api("/customers", {
+                method: "POST",
+                body: JSON.stringify({
+                  name: val("newName"),
+                  phone: val("newPhone"),
+                }),
+              });
+              closeModal();
+              customers = await api("/customers");
+              renderKasir();
+              toast("Pelanggan ditambahkan");
+            });
+          };
+        };
+        $("#submitOrder").onclick = () =>
+          run(async () => {
+            const saved = await api("/orders", {
+              method: "POST",
+              body: JSON.stringify({
+                customer_id: Number(val("customer")),
+                items: items.map((i) => ({
+                  service_id: i.service_id,
+                  quantity: i.quantity,
+                })),
+                voucher: val("voucher"),
+                redeem_points: $("#redeem").checked,
+                paid: Number(val("paid")),
+                payment_method: val("method"),
+              }),
+            });
+            toast("Pesanan " + saved.code + " disimpan");
+            await receipt(saved.id);
+            items = [];
+          });
+      }
+      async function receipt(id) {
+        const o = await api("/orders/" + id);
+        modal(
+          `<div id="receipt"><div style="text-align:center"><h2 style="margin:0">${esc(
+            me.business.name
+          )}</h2><div>${esc(me.business.address)}</div><div>${esc(
+            me.business.phone
+          )}</div><div class="sep"></div><strong>${esc(
+            o.code
+          )}</strong><br>${esc(dt(o.created_at))}</div><p>Pelanggan: ${esc(
+            o.customer_name
+          )}<br>Status: ${esc(o.status)}</p><div class="sep"></div>${o.items
+            .map(
+              (i) =>
+                `<div class="row between"><span>${esc(i.service_name)} (${
+                  i.quantity
+                } ${esc(i.unit)})</span><span>${rp(i.subtotal)}</span></div>`
+            )
+            .join(
+              ""
+            )}<div class="sep"></div><div class="row between"><span>Subtotal</span>${rp(
+            o.subtotal
+          )}</div><div class="row between"><span>Diskon member</span>-${rp(
+            o.member_discount
+          )}</div><div class="row between"><span>Diskon promo</span>-${rp(
+            o.promo_discount
+          )}</div><div class="row between"><span>Potong poin</span>-${rp(
+            o.point_discount
+          )}</div><div class="sep"></div><div class="row between"><strong>TOTAL</strong><strong>${rp(
+            o.total
+          )}</strong></div><div class="row between"><span>Dibayar</span>${rp(
+            o.paid
+          )}</div><div class="row between"><span>Sisa</span>${rp(
+            o.total - o.paid
+          )}</div><div class="sep"></div><p style="text-align:center">Terima kasih atas kepercayaan Anda.</p></div><div class="row no-print"><button class="btn" id="print">Cetak struk 80 mm</button><button class="btn secondary" id="share">Bagikan via WhatsApp</button></div>`
+        );
+        $("#print").onclick = () => window.print();
+        $("#share").onclick = () => {
+          const p = o.customer_phone.replace(/\D/g, "").replace(/^0/, "62");
+          if (!p) {
+            toast("Nomor WhatsApp pelanggan belum tersedia", true);
+            return;
+          }
+          const msg = `Halo ${o.customer_name}, pesanan laundry ${o.code} (${rp(
+            o.total
+          )}) berstatus ${o.status}. Sisa pembayaran ${rp(
+            o.total - o.paid
+          )}. — ${me.business.name}`;
+          window.open(
+            "https://wa.me/" + p + "?text=" + encodeURIComponent(msg),
+            "_blank",
+            "noopener,noreferrer"
+          );
+        };
+      }
+      const statuses = [
+        "menunggu",
+        "cuci",
+        "kering",
+        "setrika",
+        "siap",
+        "selesai",
+      ];
+      async function pesanan() {
+        orders = await api(
+          "/orders?q=" +
+            encodeURIComponent(val("searchOrders")) +
+            "&status=" +
+            encodeURIComponent(val("filterOrders"))
+        );
+        $("#content").innerHTML =
+          title("Pesanan", "Ubah status secara manual mengikuti proses nyata") +
+          `<div class="panel"><div class="row" style="margin-bottom:14px"><input id="searchOrders" style="flex:2;min-width:180px" placeholder="Cari nomor nota, nama, atau telepon"><select id="filterOrders" style="flex:1;min-width:140px"><option value="">Semua status</option>${statuses
+            .map((s) => `<option>${s}</option>`)
+            .join(
+              ""
+            )}</select><button class="btn secondary" id="findOrders">Cari</button></div><div id="ordersTable"></div></div>`;
+        $("#findOrders").onclick = () =>
+          run(async () => {
+            const q = val("searchOrders"),
+              status = val("filterOrders");
+            orders = await api(
+              "/orders?q=" +
+                encodeURIComponent(q) +
+                "&status=" +
+                encodeURIComponent(status)
+            );
+            showOrders();
+          });
+        showOrders();
+      }
+      function showOrders() {
+        $("#ordersTable").innerHTML = table(
+          [
+            "Nota / waktu",
+            "Pelanggan",
+            "Status",
+            "Total",
+            "Belum bayar",
+            "Tindakan",
+          ],
+          orders
+            .map(
+              (o) =>
+                `<tr><td><strong>${esc(
+                  o.code
+                )}</strong><br><span class="small muted">${esc(
+                  dt(o.created_at)
+                )}</span></td><td>${esc(
+                  o.customer_name
+                )}<br><span class="small muted">${esc(
+                  o.customer_phone
+                )}</span></td><td>${badge(o.status)}</td><td>${rp(
+                  o.total
+                )}</td><td>${rp(
+                  o.total - o.paid
+                )}</td><td><div class="actions"><button class="btn secondary small viewOrder" data-id="${
+                  o.id
+                }">Struk</button>${
+                  o.status !== "selesai"
+                    ? `<button class="btn small nextOrder" data-id="${
+                        o.id
+                      }">→ ${statuses[statuses.indexOf(o.status) + 1]}</button>`
+                    : ""
+                }${
+                  o.paid < o.total
+                    ? `<button class="btn secondary small payOrder" data-id="${o.id}">Bayar</button>`
+                    : ""
+                }</div></td></tr>`
+            )
+            .join("")
+        );
+        document
+          .querySelectorAll(".viewOrder")
+          .forEach((b) => (b.onclick = () => run(() => receipt(b.dataset.id))));
+        document.querySelectorAll(".nextOrder").forEach(
+          (b) =>
+            (b.onclick = () =>
+              run(async () => {
+                const o = orders.find((x) => x.id === Number(b.dataset.id));
+                const next = statuses[statuses.indexOf(o.status) + 1];
+                if (!confirm(`Ubah status ${o.code} menjadi ${next}?`)) return;
+                await api("/orders/" + o.id + "/status", {
+                  method: "PATCH",
+                  body: JSON.stringify({ status: next }),
+                });
+                toast("Status diperbarui");
+                await pesanan();
+              }))
+        );
+        document
+          .querySelectorAll(".payOrder")
+          .forEach(
+            (b) =>
+              (b.onclick = () =>
+                payment(orders.find((x) => x.id === Number(b.dataset.id))))
+          );
+      }
+
+      // ==========================================
+// HELPER PAGINATION CLIENT-SIDE
+// ==========================================
+function paginate(items, page = 1, pageSize = 50) {
+  const total = items.length;
+  const totalPages = Math.ceil(total / pageSize) || 1;
+  const currentPage = Math.min(Math.max(1, page), totalPages);
+  const start = (currentPage - 1) * pageSize;
+  const end = Math.min(start + pageSize, total);
+  return {
+    data: items.slice(start, end),
+    currentPage,
+    totalPages,
+    total,
+    start: total > 0 ? start + 1 : 0,
+    end,
+  };
+}
+
+function paginationControls(p, onPrev, onNext) {
+  if (p.totalPages <= 1) return "";
+  return `
+    <div class="row between" style="margin-top:14px; align-items:center;">
+      <span class="small muted">Menampilkan ${p.start}–${p.end} dari ${p.total} data (Halaman ${p.currentPage} dari ${p.totalPages})</span>
+      <div class="actions">
+        <button class="btn secondary small" id="pgPrev" ${p.currentPage <= 1 ? "disabled" : ""}>&laquo; Sebelumnya</button>
+        <button class="btn secondary small" id="pgNext" ${p.currentPage >= p.totalPages ? "disabled" : ""}>Selanjutnya &raquo;</button>
+      </div>
+    </div>
+  `;
+}
+
+// ==========================================
+// 1. MODUL PESANAN (Pagination 50, Search, Filter Status, Action Buttons)
+// ==========================================
+let orderPage = 1;
+async function pesanan() {
+  const q = val("searchOrders");
+  const status = val("filterOrders");
+  orders = await api(
+    "/orders?q=" + encodeURIComponent(q) + "&status=" + encodeURIComponent(status)
+  );
+  
+  $("#content").innerHTML =
+    title("Pesanan", "Ubah status secara manual mengikuti proses nyata") +
+    `<div class="panel">
+      <div class="row" style="margin-bottom:14px">
+        <input id="searchOrders" value="${esc(q)}" style="flex:2;min-width:180px" placeholder="Cari nomor nota, nama, atau telepon">
+        <select id="filterOrders" style="flex:1;min-width:140px">
+          <option value="">Semua status</option>
+          ${statuses.map((s) => `<option value="${s}" ${status === s ? "selected" : ""}>${s}</option>`).join("")}
+        </select>
+        <button class="btn secondary" id="findOrders">Cari</button>
+      </div>
+      <div id="ordersTable"></div>
+    </div>`;
+
+  $("#findOrders").onclick = () => {
+    orderPage = 1;
+    pesanan();
+  };
+  $("#searchOrders").onkeyup = (e) => {
+    if (e.key === "Enter") {
+      orderPage = 1;
+      pesanan();
+    }
+  };
+  
+  showOrders();
+}
+
+function showOrders() {
+  const p = paginate(orders, orderPage, 50);
+  orderPage = p.currentPage;
+
+  $("#ordersTable").innerHTML = 
+    table(
+      ["Nota / Waktu", "Pelanggan", "Status", "Total", "Belum Bayar", "Tindakan"],
+      p.data.map((o) => `
+        <tr>
+          <td><strong>${esc(o.code)}</strong><br><span class="small muted">${esc(dt(o.created_at))}</span></td>
+          <td>${esc(o.customer_name)}<br><span class="small muted">${esc(o.customer_phone)}</span></td>
+          <td>${badge(o.status)}</td>
+          <td>${rp(o.total)}</td>
+          <td>${rp(o.total - o.paid)}</td>
+          <td>
+            <div class="actions">
+              <button class="btn secondary small viewOrder" data-id="${o.id}">Struk</button>
+              ${o.status !== "selesai" ? `<button class="btn small nextOrder" data-id="${o.id}">→ ${statuses[statuses.indexOf(o.status) + 1]}</button>` : ""}
+              ${o.paid < o.total ? `<button class="btn secondary small payOrder" data-id="${o.id}">Bayar</button>` : ""}
+            </div>
+          </td>
+        </tr>
+      `).join("")
+    ) + paginationControls(p);
+
+  if ($("#pgPrev")) $("#pgPrev").onclick = () => { orderPage--; showOrders(); };
+  if ($("#pgNext")) $("#pgNext").onclick = () => { orderPage++; showOrders(); };
+
+  document.querySelectorAll(".viewOrder").forEach((b) => (b.onclick = () => run(() => receipt(b.dataset.id))));
+  document.querySelectorAll(".nextOrder").forEach((b) => (b.onclick = () => run(async () => {
+    const o = orders.find((x) => x.id === Number(b.dataset.id));
+    const next = statuses[statuses.indexOf(o.status) + 1];
+    if (!confirm(`Ubah status ${o.code} menjadi ${next}?`)) return;
+    await api("/orders/" + o.id + "/status", { method: "PATCH", body: JSON.stringify({ status: next }) });
+    toast("Status diperbarui");
+    await pesanan();
+  })));
+  document.querySelectorAll(".payOrder").forEach((b) => (b.onclick = () => payment(orders.find((x) => x.id === Number(b.dataset.id)))));
+}
+
+// ==========================================
+// 2. MODUL PELANGGAN (Pagination 50, Real-time Search, Info X dari Y Data)
+// ==========================================
+let customerPage = 1;
+async function pelanggan() {
+  customers = await api("/customers");
+  $("#content").innerHTML =
+    title("Pelanggan", "Level Silver mulai 10 kunjungan; Gold mulai 30 kunjungan") +
+    `<div class="panel">
+      <div class="row" style="margin-bottom:14px">
+        <input id="findCustomer" placeholder="Pencarian real-time (nama / telepon)..." style="flex:1">
+      </div>
+      <div id="customerTable"></div>
+    </div>`;
+
+  function show() {
+    const q = val("findCustomer").toLowerCase();
+    const filtered = customers.filter((c) => (c.name + " " + (c.phone || "")).toLowerCase().includes(q));
+    const p = paginate(filtered, customerPage, 50);
+    customerPage = p.currentPage;
+
+    $("#customerTable").innerHTML = `
+      <div style="margin-bottom:10px; font-weight:600;" class="small muted">
+        Menampilkan ${p.start}–${p.end} dari ${p.total} data pelanggan
+      </div>` +
+      table(
+        ["Nama", "Telepon", "Level", "Kunjungan", "Poin"],
+        p.data.map((c) => `
+          <tr>
+            <td>${esc(c.name)}</td>
+            <td>${esc(c.phone || "—")}</td>
+            <td>${badge(c.visits >= 30 ? "Gold" : c.visits >= 10 ? "Silver" : "Bronze")}</td>
+            <td>${c.visits}</td>
+            <td>${c.points}</td>
+          </tr>
+        `).join("")
+      ) + paginationControls(p);
+
+    if ($("#pgPrev")) $("#pgPrev").onclick = () => { customerPage--; show(); };
+    if ($("#pgNext")) $("#pgNext").onclick = () => { customerPage++; show(); };
+  }
+
+  $("#findCustomer").oninput = () => {
+    customerPage = 1;
+    show();
+  };
+  show();
+}
+
+// ==========================================
+// 3. MODUL LAPORAN (Preset, Validasi Tanggal, Pagination 50 & Ekspor CSV Semua Baris)
+// ==========================================
+let reportPage = 1;
+async function laporan(from = today(), to = today()) {
+  // Validasi Tanggal
+  if (!from || !to || from > to) {
+    toast("Tanggal awal tidak boleh lebih besar dari tanggal akhir", true);
+    return;
+  }
+
+  reportData = await api(
+    "/report?from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to)
+  );
+
+  const curMonth = today().slice(0, 7);
+
+  $("#content").innerHTML =
+    title("Laporan", "Penjualan dan pembayaran adalah angka yang berbeda") +
+    `<div class="panel">
+      <div class="row" style="margin-bottom:10px">
+        <button class="btn secondary small" id="presetToday">Hari ini</button>
+        <button class="btn secondary small" id="presetMonth">Bulan ini</button>
+        <div class="row" style="gap:5px; align-items:center">
+          <label style="margin:0; font-size:12px">Pilih bulan:</label>
+          <input type="month" id="monthPicker" value="${curMonth}" style="width:auto; padding:5px 8px;">
+        </div>
+      </div>
+      <div class="row">
+        ${input("Dari tanggal", "from", "date", from)}
+        ${input("Sampai tanggal", "to", "date", to)}
+        <button class="btn" id="applyReport">Terapkan</button>
+        <button class="btn secondary" id="exportReport">Unduh CSV (Semua)</button>
+      </div>
+    </div>
+    <div class="grid four" style="margin:16px 0">
+      <div class="panel">Pesanan<div class="metric">${reportData.summary.orders}</div></div>
+      <div class="panel">Nilai pesanan<div class="metric">${rp(reportData.summary.sales)}</div></div>
+      <div class="panel">Sudah dibayar<div class="metric">${rp(reportData.summary.received)}</div></div>
+      <div class="panel">Sisa tagihan<div class="metric">${rp(reportData.summary.outstanding)}</div></div>
+    </div>
+    <div class="panel" id="reportTableWrap"></div>`;
+
+  // Listener Preset
+  $("#presetToday").onclick = () => laporan(today(), today());
+  $("#presetMonth").onclick = () => {
+    const first = curMonth + "-01";
+    laporan(first, today());
+  };
+  $("#monthPicker").onchange = (e) => {
+    const ym = e.target.value;
+    if (!ym) return;
+    const first = ym + "-01";
+    const [year, month] = ym.split("-");
+    const lastDay = new Date(year, month, 0).getDate();
+    const last = `${ym}-${String(lastDay).padStart(2, "0")}`;
+    laporan(first, last);
+  };
+
+  $("#applyReport").onclick = () => run(() => laporan(val("from"), val("to")));
+
+  // Ekspor CSV SEMUA data (bukan hanya halaman aktif)
+  $("#exportReport").onclick = () => {
+    const cols = [
+      "code",
+      "created_at",
+      "customer",
+      "status",
+      "subtotal",
+      "member_discount",
+      "promo_discount",
+      "point_discount",
+      "total",
+      "paid",
+      "outstanding",
+      "payment_method",
+    ];
+    const csv =
+      "\uFEFF" +
+      [
+        cols.join(";"),
+        ...reportData.rows.map((r) =>
+          cols.map((k) => '"' + String(r[k] ?? "").replaceAll('"', '""') + '"').join(";")
+        ),
+      ].join("\r\n");
+    download(
+      new Blob([csv], { type: "text/csv;charset=utf-8" }),
+      `laporan-${from}-${to}.csv`
+    );
+  };
+
+  showReportTable();
+}
+
+function showReportTable() {
+  const p = paginate(reportData.rows, reportPage, 50);
+  reportPage = p.currentPage;
+
+  $("#reportTableWrap").innerHTML = 
+    table(
+      ["Nota", "Tanggal", "Pelanggan", "Status", "Nilai", "Dibayar", "Sisa"],
+      p.data.map((o) => `
+        <tr>
+          <td>${esc(o.code)}</td>
+          <td>${esc(dt(o.created_at))}</td>
+          <td>${esc(o.customer)}</td>
+          <td>${badge(o.status)}</td>
+          <td>${rp(o.total)}</td>
+          <td>${rp(o.paid)}</td>
+          <td>${rp(o.outstanding)}</td>
+        </tr>
+      `).join("")
+    ) + paginationControls(p);
+
+  if ($("#pgPrev")) $("#pgPrev").onclick = () => { reportPage--; showReportTable(); };
+  if ($("#pgNext")) $("#pgNext").onclick = () => { reportPage++; showReportTable(); };
+}
+
+// ==========================================
+// 4. MODUL AKTIVITAS (Pagination 50, Riset Seminggu, Impor JSON Sebulan, Riset Tahunan)
+// ==========================================
+// ==========================================
+// MODUL AKTIVITAS (TAMPILAN MODERN & MENARIK)
+// ==========================================
+let activityPage = 1;
+
+// Helper untuk Badge Aktivitas
+function getActivityBadge(action) {
+  const act = (action || "").toLowerCase();
+  if (act.includes("pesanan baru")) {
+    return `<span class="badge-act act-pesanan">🛒 ${esc(action)}</span>`;
+  } else if (act.includes("status")) {
+    return `<span class="badge-act act-status">🔄 ${esc(action)}</span>`;
+  } else if (act.includes("pembayaran") || act.includes("bayar")) {
+    return `<span class="badge-act act-bayar">💳 ${esc(action)}</span>`;
+  } else if (act.includes("pelanggan")) {
+    return `<span class="badge-act act-pelanggan">👤 ${esc(action)}</span>`;
+  } else if (act.includes("kasir") || act.includes("user")) {
+    return `<span class="badge-act act-user">🔑 ${esc(action)}</span>`;
+  }
+  return `<span class="badge-act act-default">📌 ${esc(action)}</span>`;
+}
+
+// Helper untuk Visualisasi Detail
+function formatActivityDetail(detail) {
+  if (!detail) return "—";
+  let text = esc(detail);
+
+  // Jika mengandung pola LP-XXXXXX → status
+  if (text.includes("&rarr;") || text.includes("→")) {
+    text = text.replace(/([A-Z0-9-]+)\s*(?:&rarr;|→)\s*(\w+)/g, (m, code, status) => {
+      return `<span class="code-tag">${code}</span> <span class="arrow-step">→</span> <span class="status-target">${status}</span>`;
+    });
+    return text;
+  }
+
+  // Jika mengandung pola LP-XXXXXX: Nominal
+  if (text.includes(":")) {
+    const parts = text.split(":");
+    if (parts[0].startsWith("LP-")) {
+      return `<span class="code-tag">${parts[0].trim()}</span> <span class="muted" style="margin-left:6px;">Rp ${Number(parts[1]).toLocaleString("id-ID")}</span>`;
+    }
+  }
+
+  // Jika nomor nota berdiri sendiri
+  if (text.startsWith("LP-")) {
+    return `<span class="code-tag">${text}</span>`;
+  }
+
+  return text;
+}
+
+async function aktivitas() {
+  const allRows = await api("/activities");
+  
+  $("#content").innerHTML =
+    title("Riwayat Aktivitas", "Pantau seluruh rekam jejak transaksi & perubahan sistem") +
+    `<div class="panel" style="margin-bottom:16px">
+      <div class="row" style="gap:10px; align-items:center; flex-wrap:wrap;">
+        <input id="searchAct" placeholder="Cari aktivitas, pengguna, atau detail..." style="flex:2; min-width:200px;">
+        <select id="filterActType" style="flex:1; min-width:150px;">
+          <option value="">Semua Aktivitas</option>
+          <option value="pesanan">Pesanan Baru</option>
+          <option value="status">Status Pesanan</option>
+          <option value="pembayaran">Pembayaran</option>
+          <option value="pelanggan">Pelanggan Baru</option>
+          <option value="kasir">Kasir / Akses</option>
+        </select>
+        <button class="btn secondary small" id="pruneWeekly">Riset Seminggu</button>
+        <button class="btn secondary small" id="importJson">Impor JSON</button>
+        <button class="btn danger small" id="fullResetYearly">Reset Total</button>
+        <input type="file" id="jsonFile" accept=".json" style="display:none">
+      </div>
+    </div>
+    <div class="panel" id="activityTableWrap"></div>`;
+
+  // Event Listeners Manajemen
+  $("#pruneWeekly").onclick = () => run(async () => {
+    if (!confirm("Hapus log aktivitas yang lebih lama dari 7 hari?")) return;
+    const res = await api("/activities/prune", { method: "POST", body: JSON.stringify({ days: 7 }) });
+    toast(`Berhasil membersihkan ${res.deleted} log aktivitas`);
+    await aktivitas();
+  });
+
+  $("#importJson").onclick = () => $("#jsonFile").click();
+  $("#jsonFile").onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      run(async () => {
+        const json = JSON.parse(evt.target.result);
+        const res = await api("/activities/import", {
+          method: "POST",
+          body: JSON.stringify({ activities: json }),
+        });
+        toast(`Berhasil mengimpor ${res.imported} log aktivitas`);
+        await aktivitas();
+      });
+    };
+    reader.readAsText(file);
+  };
+
+  $("#fullResetYearly").onclick = () => run(async () => {
+    if (!confirm("PERINGATAN: Semua riwayat aktivitas akan dihapus permanen! Lanjutkan?")) return;
+    await api("/activities/reset", { method: "DELETE" });
+    toast("Riwayat aktivitas telah di-reset");
+    await aktivitas();
+  });
+
+  function showActivities() {
+    const q = val("searchAct").toLowerCase();
+    const filterType = val("filterActType").toLowerCase();
+
+    const filtered = allRows.filter((r) => {
+      const matchQuery = (
+        (r.action || "") + " " + (r.user_name || "") + " " + (r.detail || "")
+      ).toLowerCase().includes(q);
+      const matchType = !filterType || (r.action || "").toLowerCase().includes(filterType);
+      return matchQuery && matchType;
+    });
+
+    const p = paginate(filtered, activityPage, 50);
+    activityPage = p.currentPage;
+
+    $("#activityTableWrap").innerHTML = 
+      table(
+        ["Waktu", "Pengguna", "Aktivitas", "Detail Aktivitas"],
+        p.data.map((a) => {
+          const uName = a.user_name || "Sistem";
+          const initial = uName.charAt(0).toUpperCase();
+          return `
+            <tr>
+              <td>
+                <span style="font-weight:600; color:#f1f5f9;">${esc(dt(a.created_at))}</span>
+              </td>
+              <td>
+                <div class="user-avatar-wrap">
+                  <div class="user-avatar">${initial}</div>
+                  <span style="font-weight:500;">${esc(uName)}</span>
+                </div>
+              </td>
+              <td>${getActivityBadge(a.action)}</td>
+              <td>${formatActivityDetail(a.detail)}</td>
+            </tr>
+          `;
+        }).join("")
+      ) + paginationControls(p);
+
+    if ($("#pgPrev")) $("#pgPrev").onclick = () => { activityPage--; showActivities(); };
+    if ($("#pgNext")) $("#pgNext").onclick = () => { activityPage++; showActivities(); };
+  }
+
+  $("#searchAct").oninput = () => { activityPage = 1; showActivities(); };
+  $("#filterActType").onchange = () => { activityPage = 1; showActivities(); };
+
+  showActivities();
+}
+
+
+
+      function payment(o) {
+        modal(
+          `<h3>Terima pembayaran · ${esc(
+            o.code
+          )}</h3><p>Sisa tagihan: <strong>${rp(
+            o.total - o.paid
+          )}</strong></p><form id="payForm">${input(
+            "Jumlah dibayar",
+            "payAmount",
+            "number",
+            o.total - o.paid,
+            `min="1" max="${o.total - o.paid}" required`
+          )}<div class="field"><label>Metode</label><select id="payMethod"><option value="tunai">Tunai</option><option value="transfer">Transfer</option><option value="qris">QRIS</option><option value="lainnya">Lainnya</option></select></div><button class="btn">Simpan pembayaran</button></form>`
+        );
+        $("#payForm").onsubmit = (e) => {
+          e.preventDefault();
+          run(async () => {
+            await api("/orders/" + o.id + "/payment", {
+              method: "POST",
+              body: JSON.stringify({
+                amount: Number(val("payAmount")),
+                method: val("payMethod"),
+              }),
+            });
+            closeModal();
+            toast("Pembayaran tercatat");
+            await go(page);
+          });
+        };
+      }
+      async function pelanggan() {
+        customers = await api("/customers");
+        $("#content").innerHTML =
+          title(
+            "Pelanggan",
+            "Level Silver mulai 10 kunjungan; Gold mulai 30 kunjungan"
+          ) +
+          `<div class="panel"><div class="row" style="margin-bottom:14px"><input id="findCustomer" placeholder="Cari nama / telepon" style="flex:1"><button class="btn secondary" id="searchCustomer">Cari</button></div><div id="customerTable"></div></div>`;
+        function show() {
+          const q = val("findCustomer").toLowerCase();
+          $("#customerTable").innerHTML = table(
+            ["Nama", "Telepon", "Level", "Kunjungan", "Poin"],
+            customers
+              .filter((c) => (c.name + " " + c.phone).toLowerCase().includes(q))
+              .map(
+                (c) =>
+                  `<tr><td>${esc(c.name)}</td><td>${esc(
+                    c.phone || "—"
+                  )}</td><td>${badge(
+                    c.visits >= 30
+                      ? "Gold"
+                      : c.visits >= 10
+                      ? "Silver"
+                      : "Bronze"
+                  )}</td><td>${c.visits}</td><td>${c.points}</td></tr>`
+              )
+              .join("")
+          );
+        }
+        $("#searchCustomer").onclick = show;
+        $("#findCustomer").oninput = show;
+        show();
+      }
+      async function piutang() {
+        orders = await api("/orders");
+        const due = orders.filter((o) => o.total > o.paid);
+        $("#content").innerHTML =
+          title("Piutang", "Sisa pembayaran dicatat per pesanan") +
+          `<div class="panel"><h3>Total belum dibayar: ${rp(
+            due.reduce((a, o) => a + o.total - o.paid, 0)
+          )}</h3>${table(
+            ["Nota", "Pelanggan", "Sisa", "Aksi"],
+            due
+              .map(
+                (o) =>
+                  `<tr><td>${esc(o.code)}</td><td>${esc(
+                    o.customer_name
+                  )}</td><td>${rp(
+                    o.total - o.paid
+                  )}</td><td><button class="btn small payOrder" data-id="${
+                    o.id
+                  }">Catat pembayaran</button></td></tr>`
+              )
+              .join("")
+          )}</div>`;
+        document
+          .querySelectorAll(".payOrder")
+          .forEach(
+            (b) =>
+              (b.onclick = () =>
+                payment(due.find((x) => x.id === Number(b.dataset.id))))
+          );
+      }
+      async function stok() {
+        stock = await api("/stock");
+        $("#content").innerHTML =
+          title("Manajemen stok", "Setiap penyesuaian dicatat sebagai mutasi") +
+          `<div class="panel"><div class="row between"><h3>Inventaris</h3>${
+            me.user.role === "owner"
+              ? '<button class="btn small" id="addStock">+ Barang</button>'
+              : ""
+          }</div>${table(
+            ["Barang", "Jumlah", "Batas minimum", "Kondisi", "Tindakan"],
+            stock
+              .map(
+                (s) =>
+                  `<tr><td>${esc(s.name)}</td><td>${s.quantity} ${esc(
+                    s.unit
+                  )}</td><td>${s.minimum}</td><td>${
+                    s.quantity <= s.minimum
+                      ? '<span class="badge menunggu">Perlu restok</span>'
+                      : '<span class="badge siap">Aman</span>'
+                  }</td><td><button class="btn secondary small moveStock" data-id="${
+                    s.id
+                  }">Mutasi stok</button></td></tr>`
+              )
+              .join("")
+          )}</div>`;
+        if ($("#addStock"))
+          $("#addStock").onclick = () => {
+            modal(
+              `<h3>Tambah barang</h3><form id="stockForm">${input(
+                "Nama barang",
+                "sn",
+                "text",
+                "",
+                "required"
+              )}${input("Satuan", "su", "text", "", "required")}${input(
+                "Jumlah awal",
+                "sq",
+                "number",
+                "0",
+                'min="0" step="0.001" required'
+              )}${input(
+                "Batas minimum",
+                "sm",
+                "number",
+                "0",
+                'min="0" step="0.001" required'
+              )}<button class="btn">Simpan</button></form>`
+            );
+            $("#stockForm").onsubmit = (e) => {
+              e.preventDefault();
+              run(async () => {
+                await api("/stock", {
+                  method: "POST",
+                  body: JSON.stringify({
+                    name: val("sn"),
+                    unit: val("su"),
+                    quantity: Number(val("sq")),
+                    minimum: Number(val("sm")),
+                  }),
+                });
+                closeModal();
+                await stok();
+              });
+            };
+          };
+        document.querySelectorAll(".moveStock").forEach(
+          (b) =>
+            (b.onclick = () => {
+              const s = stock.find((x) => x.id === Number(b.dataset.id));
+              modal(
+                `<h3>Mutasi ${esc(s.name)}</h3><p>Saat ini: ${s.quantity} ${esc(
+                  s.unit
+                )}</p><form id="moveForm">${input(
+                  "Perubahan (+ masuk, − keluar)",
+                  "delta",
+                  "number",
+                  "",
+                  'required step="0.001"'
+                )}${input(
+                  "Keterangan",
+                  "note",
+                  "text",
+                  "",
+                  'required maxlength="150"'
+                )}<button class="btn">Catat mutasi</button></form>`
+              );
+              $("#moveForm").onsubmit = (e) => {
+                e.preventDefault();
+                run(async () => {
+                  await api("/stock/" + s.id + "/move", {
+                    method: "POST",
+                    body: JSON.stringify({
+                      delta: Number(val("delta")),
+                      note: val("note"),
+                    }),
+                  });
+                  closeModal();
+                  toast("Stok diperbarui");
+                  await stok();
+                });
+              };
+            })
+        );
+      }
+      async function voucher() {
+        vouchers = await api("/vouchers");
+        $("#content").innerHTML =
+          title(
+            "Voucher promo",
+            "Berlaku satu kali per penggunaan; limit bisa ditetapkan"
+          ) +
+          `<div class="grid two"><div class="panel"><h3>Buat voucher</h3><form id="voucherForm">${input(
+            "Kode voucher",
+            "vcode",
+            "text",
+            "",
+            'required pattern="[A-Za-z0-9_-]+" maxlength="32"'
+          )}<div class="field"><label>Tipe diskon</label><select id="vtype"><option value="percent">Persen</option><option value="fixed">Nominal Rp</option></select></div>${input(
+            "Nilai",
+            "vvalue",
+            "number",
+            "",
+            'required min="1"'
+          )}${input(
+            "Minimal belanja Rp",
+            "vmin",
+            "number",
+            "0",
+            'required min="0"'
+          )}${input(
+            "Berlaku sampai",
+            "vdate",
+            "date",
+            today(),
+            "required"
+          )}${input(
+            "Maksimal pemakaian (0 = tanpa batas)",
+            "vmax",
+            "number",
+            "0",
+            'required min="0"'
+          )}<button class="btn">Simpan voucher</button></form></div><div class="panel"><h3>Daftar voucher</h3>${table(
+            ["Kode", "Diskon", "Dipakai", "Berlaku", "Aksi"],
+            vouchers
+              .map(
+                (v) =>
+                  `<tr><td>${esc(v.code)}<br><small>${
+                    v.active ? "Aktif" : "Nonaktif"
+                  }</small></td><td>${
+                    v.type === "percent" ? v.value + "%" : rp(v.value)
+                  }</td><td>${v.uses}/${v.max_uses || "∞"}</td><td>${esc(
+                    v.expires_on
+                  )}</td><td><button class="btn secondary small toggleVoucher" data-id="${
+                    v.id
+                  }" data-active="${v.active}">${
+                    v.active ? "Nonaktifkan" : "Aktifkan"
+                  }</button></td></tr>`
+              )
+              .join("")
+          )}</div></div>`;
+        $("#voucherForm").onsubmit = (e) => {
+          e.preventDefault();
+          run(async () => {
+            await api("/vouchers", {
+              method: "POST",
+              body: JSON.stringify({
+                code: val("vcode"),
+                type: val("vtype"),
+                value: Number(val("vvalue")),
+                minimum: Number(val("vmin")),
+                expires_on: val("vdate"),
+                max_uses: Number(val("vmax")),
+              }),
+            });
+            toast("Voucher dibuat");
+            await voucher();
+          });
+        };
+        document.querySelectorAll(".toggleVoucher").forEach(
+          (b) =>
+            (b.onclick = () =>
+              run(async () => {
+                await api("/vouchers/" + b.dataset.id, {
+                  method: "PATCH",
+                  body: JSON.stringify({ active: b.dataset.active === "0" }),
+                });
+                await voucher();
+              }))
+        );
+      }
+      async function laporan(from = today(), to = today()) {
+        reportData = await api(
+          "/report?from=" +
+            encodeURIComponent(from) +
+            "&to=" +
+            encodeURIComponent(to)
+        );
+        $("#content").innerHTML =
+          title(
+            "Laporan",
+            "Penjualan dan pembayaran adalah angka yang berbeda"
+          ) +
+          `<div class="panel"><div class="row">${input(
+            "Dari tanggal",
+            "from",
+            "date",
+            from
+          )}${input(
+            "Sampai tanggal",
+            "to",
+            "date",
+            to
+          )}<button class="btn" id="applyReport">Terapkan</button><button class="btn secondary" id="exportReport">Unduh CSV</button></div></div><div class="grid four" style="margin:16px 0"><div class="panel">Pesanan<div class="metric">${
+            reportData.summary.orders
+          }</div></div><div class="panel">Nilai pesanan<div class="metric">${rp(
+            reportData.summary.sales
+          )}</div></div><div class="panel">Sudah dibayar<div class="metric">${rp(
+            reportData.summary.received
+          )}</div></div><div class="panel">Sisa tagihan<div class="metric">${rp(
+            reportData.summary.outstanding
+          )}</div></div></div><div class="panel">${table(
+            [
+              "Nota",
+              "Tanggal",
+              "Pelanggan",
+              "Status",
+              "Nilai",
+              "Dibayar",
+              "Sisa",
+            ],
+            reportData.rows
+              .map(
+                (o) =>
+                  `<tr><td>${esc(o.code)}</td><td>${esc(
+                    dt(o.created_at)
+                  )}</td><td>${esc(o.customer)}</td><td>${badge(
+                    o.status
+                  )}</td><td>${rp(o.total)}</td><td>${rp(o.paid)}</td><td>${rp(
+                    o.outstanding
+                  )}</td></tr>`
+              )
+              .join("")
+          )}</div>`;
+        $("#applyReport").onclick = () =>
+          run(() => laporan(val("from"), val("to")));
+        $("#exportReport").onclick = () => {
+          const cols = [
+            "code",
+            "created_at",
+            "customer",
+            "status",
+            "subtotal",
+            "member_discount",
+            "promo_discount",
+            "point_discount",
+            "total",
+            "paid",
+            "outstanding",
+            "payment_method",
+          ];
+          const csv =
+            "\uFEFF" +
+            [
+              cols.join(";"),
+              ...reportData.rows.map((r) =>
+                cols
+                  .map(
+                    (k) => '"' + String(r[k] ?? "").replaceAll('"', '""') + '"'
+                  )
+                  .join(";")
+              ),
+            ].join("\r\n");
+          download(
+            new Blob([csv], { type: "text/csv;charset=utf-8" }),
+            `laporan-${from}-${to}.csv`
+          );
+        };
+      }
+      function download(blob, name) {
+        const a = document.createElement("a"),
+          url = URL.createObjectURL(blob);
+        a.href = url;
+        a.download = name;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+      async function aktivitas() {
+        const rows = await api("/activities");
+        $("#content").innerHTML =
+          title("Riwayat aktivitas", "200 kejadian terbaru") +
+          `<div class="panel">${table(
+            ["Waktu", "Pengguna", "Aktivitas", "Detail"],
+            rows
+              .map(
+                (a) =>
+                  `<tr><td>${esc(dt(a.created_at))}</td><td>${esc(
+                    a.user_name || "—"
+                  )}</td><td>${esc(a.action)}</td><td>${esc(
+                    a.detail
+                  )}</td></tr>`
+              )
+              .join("")
+          )}</div>`;
+      }
+      async function pengaturan() {
+        const [b, users, svc] = await Promise.all([
+          api("/settings"),
+          api("/users"),
+          api("/services"),
+        ]);
+        $("#content").innerHTML =
+          title("Pengaturan", "Kelola profil, layanan, kasir, dan arsip") +
+          `<div class="grid two"><div class="panel"><h3>Profil usaha</h3><form id="profileForm">${input(
+            "Nama usaha",
+            "bizName",
+            "text",
+            b.name,
+            "required"
+          )}${input("Alamat", "bizAddress", "text", b.address)}${input(
+            "Telepon",
+            "bizPhone",
+            "tel",
+            b.phone
+          )}<button class="btn">Simpan profil</button></form></div><div class="panel"><h3>Backup data</h3><p class="muted small">Arsip JSON per usaha untuk audit. Tidak termasuk password; pemulihan otomatis dari unggahan sengaja tidak disediakan agar tidak merusak atau menimpa data pengguna lain.</p><button class="btn secondary" id="backup">Unduh backup JSON</button><div class="sep"></div><h3>Tambah kasir</h3><form id="userForm">${input(
+            "Nama kasir",
+            "userName",
+            "text",
+            "",
+            "required"
+          )}${input(
+            "Email kasir",
+            "userEmail",
+            "email",
+            "",
+            "required"
+          )}${input(
+            "Kata sandi awal",
+            "userPass",
+            "password",
+            "",
+            'required minlength="10"'
+          )}<button class="btn">Tambah kasir</button></form><div class="sep"></div>${users
+            .map(
+              (u) => `<p>${esc(u.name)} · ${esc(u.email)} (${esc(u.role)})</p>`
+            )
+            .join(
+              ""
+            )}</div><div class="panel"><h3>Layanan & harga</h3><form id="serviceForm" class="grid two">${input(
+            "Nama layanan",
+            "svcName",
+            "text",
+            "",
+            "required"
+          )}${input("Satuan", "svcUnit", "text", "kg", "required")}${input(
+            "Harga Rp",
+            "svcPrice",
+            "number",
+            "",
+            'required min="0"'
+          )}<button class="btn">Tambah layanan</button></form><div class="sep"></div>${svc
+            .map(
+              (s) =>
+                `<div class="row between" style="border-bottom:1px solid var(--line);padding:9px 0"><span>${esc(
+                  s.name
+                )} · ${rp(s.price)}/${esc(s.unit)} ${
+                  s.active ? "" : "(nonaktif)"
+                }</span><button class="btn secondary small editService" data-id="${
+                  s.id
+                }">Ubah</button></div>`
+            )
+            .join("")}</div></div>`;
+        $("#profileForm").onsubmit = (e) => {
+          e.preventDefault();
+          run(async () => {
+            await api("/settings", {
+              method: "PATCH",
+              body: JSON.stringify({
+                name: val("bizName"),
+                address: val("bizAddress"),
+                phone: val("bizPhone"),
+              }),
+            });
+            me = await api("/me");
+            shell();
+            await pengaturan();
+            toast("Profil disimpan");
+          });
+        };
+        $("#userForm").onsubmit = (e) => {
+          e.preventDefault();
+          run(async () => {
+            await api("/users", {
+              method: "POST",
+              body: JSON.stringify({
+                name: val("userName"),
+                email: val("userEmail"),
+                password: val("userPass"),
+              }),
+            });
+            toast("Akun kasir dibuat");
+            await pengaturan();
+          });
+        };
+        $("#serviceForm").onsubmit = (e) => {
+          e.preventDefault();
+          run(async () => {
+            await api("/services", {
+              method: "POST",
+              body: JSON.stringify({
+                name: val("svcName"),
+                unit: val("svcUnit"),
+                price: Number(val("svcPrice")),
+              }),
+            });
+            await pengaturan();
+          });
+        };
+        $("#backup").onclick = () =>
+          run(async () => {
+            const data = await api("/backup");
+            download(
+              new Blob([JSON.stringify(data, null, 2)], {
+                type: "application/json",
+              }),
+              `laundrypro-backup-${today()}.json`
+            );
+          });
+        document.querySelectorAll(".editService").forEach(
+          (x) =>
+            (x.onclick = () => {
+              const s = svc.find((a) => a.id === Number(x.dataset.id));
+              modal(
+                `<h3>Ubah layanan</h3><form id="editServiceForm">${input(
+                  "Nama",
+                  "editName",
+                  "text",
+                  s.name,
+                  "required"
+                )}${input(
+                  "Satuan",
+                  "editUnit",
+                  "text",
+                  s.unit,
+                  "required"
+                )}${input(
+                  "Harga Rp",
+                  "editPrice",
+                  "number",
+                  s.price,
+                  'required min="0"'
+                )}<label><input id="editActive" type="checkbox" style="width:auto" ${
+                  s.active ? "checked" : ""
+                }> Layanan aktif</label><br><button class="btn">Simpan perubahan</button></form>`
+              );
+              $("#editServiceForm").onsubmit = (e) => {
+                e.preventDefault();
+                run(async () => {
+                  await api("/services/" + s.id, {
+                    method: "PATCH",
+                    body: JSON.stringify({
+                      name: val("editName"),
+                      unit: val("editUnit"),
+                      price: Number(val("editPrice")),
+                      active: $("#editActive").checked,
+                    }),
+                  });
+                  closeModal();
+                  await pengaturan();
+                });
+              };
+            })
+        );
+      }
+      if (localStorage.getItem("lp_theme") === "dark")
+        document.body.classList.add("dark");
+      boot();
+    </script>
+  </body>
+</html>
