@@ -1,22 +1,20 @@
 {
-  "name": "laundrypro-multiusaha",
+  "name": "laundrypro",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "scripts": {
-    "start": "node laundrypro_server.js",
-    "dev": "node --watch laundrypro_server.js"
-  },
   "engines": {
     "node": ">=20"
   },
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^11.10.0",
+    "better-sqlite3": "^11.8.1",
     "cookie-parser": "^1.4.7",
     "express": "^4.21.2",
     "express-rate-limit": "^7.5.0",
-    "express-session": "^1.19.0",
     "helmet": "^8.0.0"
   }
 }
